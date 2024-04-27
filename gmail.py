@@ -4,16 +4,18 @@ import os
 import flask
 import requests
 import json
+import string
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.apps import meet_v2 as meet
 
 CLIENT_SECRETS_FILE = "client_secret.apps.googleusercontent.com.json" #ONLY NAME FILE CHANGE THIS
 
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly', 'https://www.googleapis.com/auth/calendar.events.owned', "https://www.googleapis.com/auth/calendar.readonly"]
+SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly', 'https://www.googleapis.com/auth/calendar.events.owned', "https://www.googleapis.com/auth/calendar.readonly", 'https://www.googleapis.com/auth/meetings.space.created']
 API_VERSION = 'v2'
 
 app = flask.Flask(__name__)
@@ -29,6 +31,18 @@ def test():
   rjson = flask.request.json
   creds = Credentials.from_authorized_user_file("token.json", SCOPES)
 
+  def generate_code():
+    psw = ''
+    for x in range(3):
+        psw = psw + random.choice(list(string.ascii_lowercase))
+    psw = psw + "-"
+    for x in range(4):
+        psw = psw + random.choice(list(string.ascii_lowercase))
+    psw = psw + "-"
+    for x in range(3):
+        psw = psw + random.choice(list(string.ascii_lowercase))
+    return psw
+
   service = build("calendar", "v3", credentials=creds)
   event = {
   'summary': rjson["sum"],
@@ -41,6 +55,11 @@ def test():
     'dateTime': rjson["end"],
     'timeZone': 'Europe/Moscow',
   },
+  "conferenceData": {
+    "createRequest": {
+      "requestId": generate_code(),
+    }
+  },
   'attendees': rjson["to"],
   'reminders': {
     'useDefault': False,
@@ -50,7 +69,7 @@ def test():
     ],
   },
 }
-  event = service.events().insert(calendarId='hr@carbox.tech', body=event, sendUpdates="all").execute()  # CHANGEBLE send browser:https://www...com/test TO GET ALL IDS
+  event = service.events().insert(calendarId='hr@carbox.tech', conferenceDataVersion=1, body=event, sendUpdates="all").execute()  # CHANGEBLE send browser:https://www...com/test TO GET ALL IDS
 
   return event.get('htmlLink')
 
