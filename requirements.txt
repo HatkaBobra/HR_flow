@@ -1,5 +1,6 @@
-google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
-flask
-requests
+google-api-python-client==2.123.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+google-apps-meet==0.1.6
+flask==2.0.3
+requests==2.31.0
