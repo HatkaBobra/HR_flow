@@ -234,7 +234,7 @@ exports.rule = entities.Issue.onSchedule({
   },
   action: (ctx) => {
     const connection = new http.Connection('https://app.slack.com/');
-    let qparam = {channel: 'C06RBDBANGG', blocks: ''};
+    let qparam = {channel: '', blocks: ''};
     connection.addHeader({name: 'Authorization', value: 'Bearer '});
 	connection.addHeader({name: 'Content-Type', value: 'application/x-www-form-urlencoded'}); // /x-www-form-urlencoded
     connection.postSync('api/chat.postMessage', qparam);
